@@ -12,6 +12,11 @@ import { GradientFeatureComponent } from './sections/gradient-feature/gradient-f
 import { StatsComponent } from './sections/stats/stats.component';
 import { CtaComponent } from './sections/cta/cta.component';
 import { HeroComponent } from './sections/hero/hero.component';
+import { ContactComponent } from './pages/contact/contact.component';
+import { PageHeadingComponent } from './shared/page-heading/page-heading.component';
+import { FaqComponent } from './pages/faq/faq.component';
+import { AboutComponent } from './pages/about/about.component';
+import { BridgeComponent } from './bridge/bridge.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +29,12 @@ import { HeroComponent } from './sections/hero/hero.component';
     GradientFeatureComponent,
     StatsComponent,
     CtaComponent,
-    HeroComponent
+    HeroComponent,
+    ContactComponent,
+    PageHeadingComponent,
+    FaqComponent,
+    AboutComponent,
+    BridgeComponent
   ],
   imports: [
     BrowserModule,
