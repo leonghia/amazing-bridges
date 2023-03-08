@@ -1,0 +1,495 @@
+<!--
+  This example requires Tailwind CSS v2.0+ 
+  
+  This example requires some changes to your config:
+  
+  ```
+  // tailwind.config.js
+  module.exports = {
+    // ...
+    plugins: [
+      // ...
+      require('@tailwindcss/forms'),
+      require('@tailwindcss/typography'),
+      require('@tailwindcss/aspect-ratio'),
+    ],
+  }
+  ```
+-->
+
+<main (visibilityChange)="onVisibilityChange($event)" class="mx-auto pt-14 px-4 sm:pt-16 sm:px-6 lg:max-w-7xl lg:px-8"
+  enterTheViewportNotifier>
+  <!-- Bridge -->
+  <div [@fadeIn]="enterViewport" class="lg:grid lg:grid-rows-1 lg:grid-cols-7 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
+    <!-- Bridge images -->
+    <div class="lg:row-end-1 lg:col-span-4">
+      <!-- Image gallery -->
+      <div class="flex flex-col-reverse">
+        <!-- Image selector -->
+        <div class="hidden mt-6 w-full max-w-2xl mx-auto sm:block lg:max-w-none">
+          <swiper [config]="config" class="h-40 relative">
+            <ng-template swiperSlide *ngFor="let image of bridgeImages" class="">
+              <button
+                class="h-24 bg-white rounded-md flex items-center justify-center text-sm font-medium uppercase text-gray-900 cursor-pointer hover:bg-gray-50"
+                aria-controls="tabs-1-panel-1" role="tab" type="button" (click)="onClickImage(image)">
+                <span class="sr-only"> Angled view </span>
+                <span class="absolute inset-1 rounded-md overflow-hidden">
+                  <img [src]="image.src" alt="" class="w-full h-full object-center object-cover">
+                </span>
+
+                <span [ngClass]="image.src === selectedImage.src ? 'ring-indigo-500' : 'ring-transparent'"
+                  class="absolute inset-1 rounded-md ring-2 ring-offset-2 pointer-events-none"
+                  aria-hidden="true"></span>
+              </button>
+            </ng-template>
+
+          </swiper>
+
+        </div>
+
+        <div class="w-full aspect-w-4 aspect-h-3">
+          <!-- Tab panel, show/hide based on tab state. -->
+          <div class="overflow-hidden sm:rounded-lg" id="tabs-1-panel-1" aria-labelledby="tabs-1-tab-1" role="tabpanel"
+            tabindex="0">
+            <img (click)="onShowModal(selectedImage.src)" [src]="selectedImage.src" [alt]="selectedImage.alt"
+              [ngClass]="{'scale-105': modalShown}"
+              class="w-full h-full object-center object-cover sm:rounded-lg hover:scale-105 ease-in duration-500 cursor-zoom-in">
+          </div>
+
+          <!-- More images... -->
+        </div>
+      </div>
+      <!-- The lightbox -->
+      <div class="hidden fixed top-0 left-0 z-[80] w-screen h-screen bg-black/70 flex justify-center items-center"
+        #modal>
+        <div class="flex flex-col gap-y-5">
+          <div class="flex justify-center">
+            <a (click)="onCloseModal()" class="z-90 text-white text-5xl font-bold cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                <path fill-rule="evenodd"
+                  d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                  clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+
+          <img class="max-w-[800px] max-h-[600px] object-cover" #modalImg />
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bridge details -->
+    <div class="max-w-2xl mx-auto mt-14 sm:mt-16 lg:max-w-none lg:mt-0 lg:row-end-2 lg:row-span-2 lg:col-span-3">
+      <div class="flex flex-col-reverse">
+        <div class="mt-4">
+          <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">{{ bridge.name }}</h1>
+
+          <h2 id="information-heading" class="sr-only">Bridge information</h2>
+          <p class="text-sm text-gray-500 mt-2"><span>{{ bridge.city }}</span>,<span> {{ bridge.country }}</span></p>
+        </div>
+
+        <div>
+          <h3 class="sr-only">Reviews</h3>
+          <div class="flex items-center">
+            <!--
+                  Heroicon name: solid/star
+  
+                  Active: "text-yellow-400", Default: "text-gray-300"
+                -->
+            <svg [ngClass]="{'text-yellow-400': bridge.average_rating >= 1}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+
+            <!-- Heroicon name: solid/star -->
+            <svg [ngClass]="{'text-yellow-400': bridge.average_rating >= 2}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+
+            <!-- Heroicon name: solid/star -->
+            <svg [ngClass]="{'text-yellow-400': bridge.average_rating >= 3}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+
+            <!-- Heroicon name: solid/star -->
+            <svg [ngClass]="{'text-yellow-400': bridge.average_rating >= 4}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+
+            <!-- Heroicon name: solid/star -->
+            <svg [ngClass]="{'text-yellow-400': bridge.average_rating >= 5}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </div>
+          
+        </div>
+      </div>
+
+      <p class="text-gray-500 mt-6">{{ (bridge.intro | slice:0:243) + '. . . . .' }}</p>
+
+
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+        <button (click)="onAddBridgeToFavorites(bridge.id, bridge.name)" type="button"
+          class="w-full bg-indigo-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500">Add to favorites</button>
+        <button (click)="onAddBridgeToComparison(bridge)" type="button"
+          class="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500">Compare
+          bridge</button>
+      </div>
+
+
+
+      <div class="border-t border-gray-200 mt-10 pt-10">
+        <h3 class="text-sm font-medium text-gray-900">Characteristics</h3>
+        <div class="mt-4 prose prose-sm text-gray-500">
+          <ul role="list">
+            <li>Length: {{ bridge.length ? (bridge.length | number:'1.0-0') + ' m' : 'N/A'}}</li>
+
+            <li>Width: {{ bridge.width ? (bridge.width | number:'1.0-0') + ' m' : 'N/A'}}</li>
+
+            <li>Height: {{ bridge.height ? (bridge.height | number:'1.0-0') + ' m' : 'N/A'}}</li>
+
+            <li>Material: {{ bridge.material }}</li>
+
+            <li>Style: {{ bridge.style ? bridge.style : 'N/A' }}</li>
+
+            <li>Built in: {{ bridge.built_in ? (bridge.built_in | customDate) : 'N/A' }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 mt-10 pt-10">
+        <h3 class="text-sm font-medium text-gray-900">Documentation</h3>
+        <p class="mt-4 text-sm text-gray-500">The PDF documentation is available for personal and professional use. But
+          you cannot resell or redistribute our documentation in their original or modified state. <a href="../../../assets/document/bridge-document.pdf"
+            class="font-medium text-indigo-600 hover:text-indigo-500">Download full PDF</a></p>
+      </div>
+
+      <div class="border-t border-gray-200 mt-10 pt-10">
+        <h3 class="text-sm font-medium text-gray-900 mb-5">Map Location</h3>
+        <iframe [src]="bridge.map" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+
+      <div class="border-t border-gray-200 mt-10 pt-10">
+        <h3 class="text-sm font-medium text-gray-900">Share</h3>
+        <ul role="list" class="flex items-center space-x-6 mt-4">
+          <li>
+            <a class="cursor-pointer flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-500">
+              <span class="sr-only">Share on Facebook</span>
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd"
+                  d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z"
+                  clip-rule="evenodd" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a class="cursor-pointer flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-500">
+              <span class="sr-only">Share on Instagram</span>
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd"
+                  d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                  clip-rule="evenodd" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a class="cursor-pointer flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-500">
+              <span class="sr-only">Share on Twitter</span>
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path
+                  d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="w-full max-w-2xl mx-auto mt-16 lg:max-w-none lg:mt-0 lg:col-span-4">
+      <div>
+        <div class="border-b border-gray-200">
+          <div class="-mb-px flex space-x-8" aria-orientation="horizontal" role="tablist">
+            <!-- Selected: "border-indigo-600 text-indigo-600", Not Selected: "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300" -->
+            <button (click)="onClickBtnTab('tab-info')" id="tab-license"
+              [ngClass]="selectedTab === 'tab-info' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300'"
+              class="whitespace-nowrap py-6 border-b-2 font-medium text-sm" aria-controls="tab-panel-license" role="tab"
+              type="button">Information</button>
+            <button (click)="onClickBtnTab('tab-reviews')" id="tab-reviews"
+              [ngClass]="selectedTab === 'tab-reviews' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300'"
+              class="whitespace-nowrap py-6 border-b-2 font-medium text-sm" aria-controls="tab-panel-reviews" role="tab"
+              type="button">User Reviews</button>
+            <button (click)="onClickBtnTab('tab-faq')" id="tab-faq"
+              [ngClass]="selectedTab === 'tab-faq' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300'"
+              class="whitespace-nowrap py-6 border-b-2 font-medium text-sm" aria-controls="tab-panel-faq" role="tab"
+              type="button">Frequently Asked</button>
+
+          </div>
+        </div>
+
+        <!-- 'Customer Reviews' panel, show/hide based on tab state -->
+        <div *ngIf="selectedTab === 'tab-reviews'" id="tab-panel-reviews" class="-mb-10" aria-labelledby="tab-reviews"
+          role="tabpanel" tabindex="0">
+
+          <div class="lg:grid lg:grid-cols-11 lg:gap-x-8">
+            <div class="lg:col-span-6">
+              <h3 class="sr-only">Customer Reviews</h3>
+
+              <div class="mt-6">
+                <h3 class="sr-only">Review data</h3>
+
+                <dl class="space-y-3">
+                  <div class="flex items-center text-sm">
+                    <dt class="flex-1 flex items-center">
+                      <p class="w-3 font-medium text-gray-900">5<span class="sr-only"> star reviews</span></p>
+                      <div aria-hidden="true" class="ml-1 flex-1 flex items-center">
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="flex-shrink-0 h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+
+                        <div class="ml-3 relative flex-1">
+                          <div class="h-3 bg-gray-100 border border-gray-200 rounded-full"></div>
+
+                          <div [style.width.%]="five_star_width_percent * 100"
+                            class="absolute inset-y-0 bg-yellow-400 border border-yellow-400 rounded-full"></div>
+                        </div>
+                      </div>
+                    </dt>
+                    <dd class="ml-3 w-10 text-right tabular-nums text-sm text-gray-900">{{ five_star_width_percent * 100 }}%</dd>
+                  </div>
+
+                  <div class="flex items-center text-sm">
+                    <dt class="flex-1 flex items-center">
+                      <p class="w-3 font-medium text-gray-900">4<span class="sr-only"> star reviews</span></p>
+                      <div aria-hidden="true" class="ml-1 flex-1 flex items-center">
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="flex-shrink-0 h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+
+                        <div class="ml-3 relative flex-1">
+                          <div class="h-3 bg-gray-100 border border-gray-200 rounded-full"></div>
+
+                          <div [style.width.%]="four_star_width_percent * 100"
+                            class="absolute inset-y-0 bg-yellow-400 border border-yellow-400 rounded-full"></div>
+                        </div>
+                      </div>
+                    </dt>
+                    <dd class="ml-3 w-10 text-right tabular-nums text-sm text-gray-900">{{ four_star_width_percent * 100 }}%</dd>
+                  </div>
+
+                  <div class="flex items-center text-sm">
+                    <dt class="flex-1 flex items-center">
+                      <p class="w-3 font-medium text-gray-900">3<span class="sr-only"> star reviews</span></p>
+                      <div aria-hidden="true" class="ml-1 flex-1 flex items-center">
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="flex-shrink-0 h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+
+                        <div class="ml-3 relative flex-1">
+                          <div class="h-3 bg-gray-100 border border-gray-200 rounded-full"></div>
+
+                          <div [style.width.%]="three_star_width_percent * 100"
+                            class="absolute inset-y-0 bg-yellow-400 border border-yellow-400 rounded-full"></div>
+                        </div>
+                      </div>
+                    </dt>
+                    <dd class="ml-3 w-10 text-right tabular-nums text-sm text-gray-900">{{ three_star_width_percent * 100 }}%</dd>
+                  </div>
+
+                  <div class="flex items-center text-sm">
+                    <dt class="flex-1 flex items-center">
+                      <p class="w-3 font-medium text-gray-900">2<span class="sr-only"> star reviews</span></p>
+                      <div aria-hidden="true" class="ml-1 flex-1 flex items-center">
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="flex-shrink-0 h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+
+                        <div class="ml-3 relative flex-1">
+                          <div class="h-3 bg-gray-100 border border-gray-200 rounded-full"></div>
+
+                          <div [style.width.%]="two_star_width_percent * 100"
+                            class="absolute inset-y-0 bg-yellow-400 border border-yellow-400 rounded-full"></div>
+                        </div>
+                      </div>
+                    </dt>
+                    <dd class="ml-3 w-10 text-right tabular-nums text-sm text-gray-900">{{ two_star_width_percent * 100 }}%</dd>
+                  </div>
+
+                  <div class="flex items-center text-sm">
+                    <dt class="flex-1 flex items-center">
+                      <p class="w-3 font-medium text-gray-900">1<span class="sr-only"> star reviews</span></p>
+                      <div aria-hidden="true" class="ml-1 flex-1 flex items-center">
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="flex-shrink-0 h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+
+                        <div class="ml-3 relative flex-1">
+                          <div class="h-3 bg-gray-100 border border-gray-200 rounded-full"></div>
+
+                          <div [style.width.%]="one_star_width_percent * 100"
+                            class="absolute inset-y-0 bg-yellow-400 border border-yellow-400 rounded-full"></div>
+                        </div>
+                      </div>
+                    </dt>
+                    <dd class="ml-3 w-10 text-right tabular-nums text-sm text-gray-900">{{ one_star_width_percent * 100 }}%</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+            <div class="lg:col-span-5 mt-10">
+              <h3 class="text-lg font-medium text-gray-900">Share your thoughts</h3>
+              <p class="mt-1 text-sm text-gray-600">If you’ve visited this bridge, please share your thoughts with other
+                users.</p>
+
+              <button type="button" (click)="onHitTheWriteReviewBtn()"
+                class="mt-6 inline-flex w-full bg-white border border-gray-300 rounded-md py-2 px-8 items-center justify-center text-sm font-medium text-gray-900 hover:bg-gray-50 sm:w-auto lg:w-full">Write
+                a review</button>
+              <app-review-modal *ngIf="reviewModalState"></app-review-modal>
+            </div>
+          </div>
+
+          <div *ngFor="let review of reviews" class="flex text-sm text-gray-500 space-x-4">
+            <div class="flex-none py-10">
+              <img
+                [src]="review.avatar"
+                alt="" class="w-10 h-10 bg-gray-100 rounded-full">
+            </div>
+            <div class="flex-1 py-10">
+              <h3 class="font-medium text-gray-900">{{ review.first_name }} {{ review.last_name }}</h3>
+              <p><time datetime="2021-07-16">{{ review.createdAt | date: 'medium' }}</time></p>
+
+              <div class="flex items-center mt-4">
+                <!--
+                      Heroicon name: solid/star
+  
+                      Active: "text-yellow-400", Default: "text-gray-300"
+                    -->
+                <svg [ngClass]="{'text-yellow-400': review.rating >= 1}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+
+                <!-- Heroicon name: solid/star -->
+                <svg [ngClass]="{'text-yellow-400': review.rating >= 2}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+
+                <!-- Heroicon name: solid/star -->
+                <svg [ngClass]="{'text-yellow-400': review.rating >= 3}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+
+                <!-- Heroicon name: solid/star -->
+                <svg [ngClass]="{'text-yellow-400': review.rating >= 4}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+
+                <!-- Heroicon name: solid/star -->
+                <svg [ngClass]="{'text-yellow-400': review.rating === 5}" class="text-gray-300 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              
+
+              <div class="mt-4 prose prose-sm max-w-none text-gray-500">
+                <h4>{{ review.title }}</h4>
+                <p>{{ review.content }}</p>
+              </div>
+            </div>
+          </div>
+
+          
+
+          <!-- More reviews... -->
+          
+        </div>
+
+        <!-- 'FAQ' panel, show/hide based on tab state -->
+        <dl *ngIf="selectedTab === 'tab-faq'" id="tab-panel-faq" class="text-sm text-gray-500" aria-labelledby="tab-faq"
+          role="tabpanel" tabindex="0">
+          <h3 class="sr-only">Frequently Asked Questions</h3>
+
+          <dt class="mt-10 font-medium text-gray-900">Where do your site get information about {{ bridge.name }} ?</dt>
+          <dd class="mt-2 prose prose-sm max-w-none text-gray-500">
+            <p>Most of our sources come from Wikipedia. It is a multilingual free online encyclopedia written and maintained by a community of volunteers and is the largest and most-read reference work in history. Therefore you can totally trust our sources.</p>
+          </dd>
+
+          <dt class="mt-10 font-medium text-gray-900">Can I use the content of {{ bridge.name }} for my purpose (non-commercially)?</dt>
+          <dd class="mt-2 prose prose-sm max-w-none text-gray-500">
+            <p>Yes. Since our site is a public information site, users are entitled to use our site content for their own use. Of course we would be appreciate if you could credit and link back to us.</p>
+          </dd>
+
+          <dt class="mt-10 font-medium text-gray-900">What are the sources of the images of {{ bridge.name }} ?</dt>
+          <dd class="mt-2 prose prose-sm max-w-none text-gray-500">
+            <p>Those images of {{ bridge.name }} are taken free-royalty from some famouse websites like Unplash, Pexels and so on. You could find more beautiful images of {{ bridge.name }} from other sources such as Instagram, Pinterest.</p>
+          </dd>
+
+          <dt class="mt-10 font-medium text-gray-900">Can I download those images and use them in my work ?</dt>
+          <dd class="mt-2 prose prose-sm max-w-none text-gray-500">
+            <p>Unlike the text content, we don't grant the use for images because they can be digital assets of some authors. Therefore, you need to search a specific image of {{ bridge.name }} that you want to use, reach out to the author of that image and ask for his/her permission.</p>
+          </dd>
+
+          <!-- More FAQs... -->
+        </dl>
+
+        <!-- 'Info' panel, show/hide based on tab state -->
+        <div *ngIf="selectedTab === 'tab-info'" id="tab-panel-license" class="pt-10" aria-labelledby="tab-license"
+          role="tabpanel" tabindex="0">
+          <h3 class="sr-only">License</h3>
+
+          <div class="prose prose-sm max-w-none text-gray-500">
+            <h4>Overview</h4>
+
+            <p class="whitespace-pre-line">{{ bridge.intro }}</p>
+
+            <h4>History</h4>
+            <p class="whitespace-pre-line">{{ bridge.history ? bridge.history : 'Updating......' }}</p>
+
+            <h4>Construction</h4>
+
+            <p class="whitespace-pre-line">{{ bridge.construction ? bridge.construction : 'Updating......' }}</p>
+
+            <h4>Design</h4>
+
+            <p class="whitespace-pre-line">{{ bridge.design ? bridge.design : 'Updating......' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-related></app-related>
+</main>
